@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.shixuan.inventory.mapper.SysPermissionMapper">
+
+    <resultMap id="BaseResultMap" type="org.shixuan.inventory.domain.SysPermission">
+        <id column="id" property="id"/>
+        <result column="permission_name" property="permissionName"/>
+        <result column="permission_code" property="permissionCode"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, permission_name, permission_code, parent_id, type
+    </sql>
+
+    <select id="findPermissionCodesByRoleIds" resultType="java.lang.String">
+        SELECT DISTINCT p.permission_code
+        FROM sys_permission p
+                 JOIN sys_role_permission rp ON p.id = rp.permission_id
+        WHERE rp.role_id IN
+        <foreach item="roleId" collection="roleIds" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+        AND p.permission_code IS NOT NULL AND p.permission_code != ''
+    </select>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM sys_permission
+        ORDER BY id
+    </select>
+
+    <insert id="insert" parameterType="org.shixuan.inventory.domain.SysPermission" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_permission (permission_name, permission_code, parent_id, type)
+        VALUES (#{permissionName}, #{permissionCode}, #{parentId}, #{type})
+    </insert>
+
+    <update id="update" parameterType="org.shixuan.inventory.domain.SysPermission">
+        UPDATE sys_permission
+        <set>
+            <if test="permissionName != null">permission_name = #{permissionName},</if>
+            <if test="permissionCode != null">permission_code = #{permissionCode},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="type != null">type = #{type},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM sys_permission WHERE id = #{id}
+    </delete>
+
+</mapper> 

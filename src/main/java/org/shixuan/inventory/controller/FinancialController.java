@@ -5,6 +5,7 @@ import org.shixuan.inventory.dto.Result;
 import org.shixuan.inventory.service.FinancialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +30,7 @@ public class FinancialController {
      * @param endDate 结束日期
      * @return
      */
+    @PreAuthorize("hasAuthority('financial:records')")
     @GetMapping("/records")
     public Result<List<FinancialRecord>> getFinancialRecords(
             @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,

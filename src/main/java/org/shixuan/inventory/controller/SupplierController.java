@@ -7,6 +7,7 @@ import org.shixuan.inventory.dto.Result;
 import org.shixuan.inventory.enums.ResultCode;
 import org.shixuan.inventory.service.SupplierService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/supplier")
+@PreAuthorize("hasAuthority('data:supplier')")
 public class SupplierController {
     @Autowired
     private SupplierService supplierService;
@@ -38,7 +40,6 @@ public class SupplierController {
     
     /**
      * 获取所有供应商
-     * @return
      */
     @GetMapping("/list")
     public Result<List<Supplier>> listAll() {

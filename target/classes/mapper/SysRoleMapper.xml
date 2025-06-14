@@ -15,17 +15,64 @@
         id, role_name, role_code, description, create_time, update_time
     </sql>
     
-    <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long">
-        select 
-        <include refid="Base_Column_List" />
+    <select id="selectList" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from sys_role
+        <where>
+            <if test="roleName != null and roleName != ''">
+                and role_name like concat('%', #{roleName}, '%')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+    
+    <select id="selectAll" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" /> from sys_role order by create_time asc
+    </select>
+    
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
         from sys_role
         where id = #{id}
     </select>
     
-    <select id="selectByRoleCode" resultMap="BaseResultMap" parameterType="java.lang.String">
-        select 
-        <include refid="Base_Column_List" />
+    <select id="selectByRoleCode" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
         from sys_role
         where role_code = #{roleCode}
     </select>
+
+    <insert id="insert" parameterType="org.shixuan.inventory.domain.SysRole" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_role (role_name, role_code, description)
+        values (#{roleName}, #{roleCode}, #{description})
+    </insert>
+
+    <update id="update" parameterType="org.shixuan.inventory.domain.SysRole">
+        update sys_role
+        <set>
+            <if test="roleName != null">role_name = #{roleName},</if>
+            <if test="roleCode != null">role_code = #{roleCode},</if>
+            <if test="description != null">description = #{description},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from sys_role where id = #{id}
+    </delete>
+
+    <select id="selectPermissionIdsByRoleId" resultType="java.lang.Long">
+        select permission_id from sys_role_permission where role_id = #{roleId}
+    </select>
+
+    <delete id="deleteRolePermissionsByRoleId" parameterType="java.lang.Long">
+        delete from sys_role_permission where role_id = #{roleId}
+    </delete>
+
+    <insert id="batchInsertRolePermissions">
+        insert into sys_role_permission (role_id, permission_id) values
+        <foreach collection="permissionIds" item="permissionId" separator=",">
+            (#{roleId}, #{permissionId})
+        </foreach>
+    </insert>
 </mapper> 

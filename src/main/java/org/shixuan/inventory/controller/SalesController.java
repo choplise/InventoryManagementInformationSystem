@@ -7,8 +7,10 @@ import org.shixuan.inventory.enums.ResultCode;
 import org.shixuan.inventory.service.SalesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ public class SalesController {
     /**
      * 分页查询销售单
      */
+    @PreAuthorize("hasAuthority('business:sales')")
     @GetMapping("/page")
     public Result<PageResult<SalesOrder>> querySalesOrders(
             @RequestParam(defaultValue = "1") int pageNum,
@@ -41,9 +44,12 @@ public class SalesController {
     /**
      * 创建销售单
      */
+    @PreAuthorize("hasAuthority('business:sales:create')")
     @PostMapping
-    public Result<SalesOrder> createSalesOrder(@RequestBody SalesOrder salesOrder) {
-        // TODO: 从token中获取当前用户ID，并设置为销售员ID
+    public Result<SalesOrder> createSalesOrder(HttpServletRequest request,@RequestBody SalesOrder salesOrder) {
+        // TODO: 从token中获取当前用户ID，并设置为创建人ID
+        Long currentUserId = request.getAttribute("userId") != null ? (Long) request.getAttribute("userId") : null;
+        salesOrder.setCreatorId(currentUserId);
         SalesOrder createdOrder = salesService.createSalesOrder(salesOrder);
         return Result.success(createdOrder);
     }
@@ -51,6 +57,7 @@ public class SalesController {
     /**
      * 获取销售单详情
      */
+    @PreAuthorize("hasAuthority('business:sales')")
     @GetMapping("/{id}")
     public Result<SalesOrder> getSalesOrderDetails(@PathVariable Long id) {
         SalesOrder order = salesService.getSalesOrderDetails(id);
@@ -73,6 +80,7 @@ public class SalesController {
     /**
      * 审核销售单
      */
+    @PreAuthorize("hasAuthority('business:sales:approve')")
     @PostMapping("/{id}/approve")
     public Result<Void> approveSalesOrder(@PathVariable Long id) {
         boolean success = salesService.approveSalesOrder(id);
@@ -82,6 +90,7 @@ public class SalesController {
     /**
      * 执行销售出库
      */
+    @PreAuthorize("hasAuthority('business:sales:stock-out')")
     @PostMapping("/{id}/stock-out")
     public Result<Void> executeStockOut(@PathVariable Long id, @RequestBody Map<String, Long> payload) {
         Long operatorId = payload.get("operatorId");

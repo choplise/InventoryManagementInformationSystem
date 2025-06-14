@@ -7,6 +7,7 @@ import org.shixuan.inventory.service.ProductCategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +16,8 @@ import java.util.List;
  * 商品分类控制器
  */
 @RestController
-@RequestMapping("/api/category")
+@RequestMapping("/category")
+@PreAuthorize("hasAuthority('data:product')")
 public class ProductCategoryController {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductCategoryController.class);

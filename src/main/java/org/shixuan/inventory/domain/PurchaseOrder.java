@@ -30,14 +30,14 @@ public class PurchaseOrder implements Serializable {
     private Long supplierId;
 
     /**
-     * 采购员ID
+     * 创建人ID
      */
-    private Long purchaserId;
+    private Long creatorId;
 
     /**
-     * 采购日期
+     * 订单日期
      */
-    private Date purchaseDate;
+    private Date orderDate;
 
     /**
      * 总金额
@@ -71,9 +71,9 @@ public class PurchaseOrder implements Serializable {
     private String supplierName;
     
     /**
-     * 采购员名称 (非数据库字段)
+     * 创建人名称 (非数据库字段)
      */
-    private String purchaserName;
+    private String creatorName;
 
     /**
      * 采购单明细列表 (非数据库字段)
