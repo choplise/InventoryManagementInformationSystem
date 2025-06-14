@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.shixuan.inventory.mapper.InventoryRecordMapper">
+    
+    <resultMap id="BaseResultMap" type="org.shixuan.inventory.domain.InventoryRecord">
+        <id column="id" property="id" />
+        <result column="product_id" property="productId" />
+        <result column="change_quantity" property="changeQuantity" />
+        <result column="quantity_after_change" property="quantityAfterChange" />
+        <result column="change_type" property="changeType" />
+        <result column="related_order_no" property="relatedOrderNo" />
+        <result column="operator_id" property="operatorId" />
+        <result column="operate_time" property="operateTime" />
+        <result column="product_code" property="productCode" />
+        <result column="product_name" property="productName" />
+        <result column="operator_name" property="operatorName" />
+    </resultMap>
+    
+    <select id="selectList" resultMap="BaseResultMap">
+        select 
+            r.id, r.product_id, r.change_quantity, r.quantity_after_change,
+            r.change_type, r.related_order_no, r.operator_id, r.operate_time,
+            p.product_code, p.product_name, u.real_name as operator_name
+        from inventory_record r
+        inner join product p on r.product_id = p.id
+        left join sys_user u on r.operator_id = u.id
+        <where>
+            <if test="productId != null">
+                and r.product_id = #{productId}
+            </if>
+            <if test="changeType != null">
+                and r.change_type = #{changeType}
+            </if>
+            <if test="startTime != null">
+                and r.operate_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and r.operate_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by r.operate_time desc
+    </select>
+    
+    <insert id="insert" parameterType="org.shixuan.inventory.domain.InventoryRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into inventory_record (
+            product_id, change_quantity, quantity_after_change, change_type,
+            related_order_no, operator_id
+        )
+        values (
+            #{productId}, #{changeQuantity}, #{quantityAfterChange}, #{changeType},
+            #{relatedOrderNo}, #{operatorId}
+        )
+    </insert>
+</mapper> 

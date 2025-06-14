@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.shixuan.inventory.mapper.PurchaseOrderMapper">
+
+    <resultMap id="PurchaseOrderResultMap" type="org.shixuan.inventory.domain.PurchaseOrder">
+        <id column="id" property="id"/>
+        <result column="order_no" property="orderNo"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="purchaser_id" property="purchaserId"/>
+        <result column="purchase_date" property="purchaseDate"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="supplier_name" property="supplierName"/>
+        <result column="purchaser_name" property="purchaserName"/>
+    </resultMap>
+
+    <resultMap id="PurchaseOrderItemResultMap" type="org.shixuan.inventory.domain.PurchaseOrderItem">
+        <id column="item_id" property="id"/>
+        <result column="purchase_order_id" property="purchaseOrderId"/>
+        <result column="product_id" property="productId"/>
+        <result column="quantity" property="quantity"/>
+        <result column="purchase_price" property="purchasePrice"/>
+        <result column="amount" property="amount"/>
+        <result column="product_code" property="productCode"/>
+        <result column="product_name" property="productName"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        po.id, po.order_no, po.supplier_id, po.purchaser_id, po.purchase_date, po.total_amount,
+        po.status, po.remark, po.create_time, po.update_time
+    </sql>
+
+    <select id="selectList" resultMap="PurchaseOrderResultMap">
+        select
+        <include refid="Base_Column_List"/>,
+        s.supplier_name,
+        u.username as purchaser_name
+        from purchase_order po
+        left join supplier s on po.supplier_id = s.id
+        left join sys_user u on po.purchaser_id = u.id
+        <where>
+            <if test="orderNo != null and orderNo != ''">
+                and po.order_no like concat('%', #{orderNo}, '%')
+            </if>
+            <if test="supplierId != null">
+                and po.supplier_id = #{supplierId}
+            </if>
+            <if test="status != null">
+                and po.status = #{status}
+            </if>
+            <if test="startDate != null">
+                and po.purchase_date >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                and po.purchase_date &lt;= #{endDate}
+            </if>
+        </where>
+        order by po.create_time desc
+    </select>
+
+    <select id="selectById" resultMap="PurchaseOrderResultMap">
+        select
+        <include refid="Base_Column_List"/>,
+        s.supplier_name,
+        u.username as purchaser_name
+        from purchase_order po
+        left join supplier s on po.supplier_id = s.id
+        left join sys_user u on po.purchaser_id = u.id
+        where po.id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="org.shixuan.inventory.domain.PurchaseOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into purchase_order (
+            order_no, supplier_id, purchaser_id, purchase_date, total_amount,
+            status, remark
+        ) values (
+            #{orderNo}, #{supplierId}, #{purchaserId}, #{purchaseDate}, #{totalAmount},
+            #{status}, #{remark}
+        )
+    </insert>
+
+    <update id="update" parameterType="org.shixuan.inventory.domain.PurchaseOrder">
+        update purchase_order
+        <set>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="purchaserId != null">purchaser_id = #{purchaserId},</if>
+            <if test="purchaseDate != null">purchase_date = #{purchaseDate},</if>
+            <if test="totalAmount != null">total_amount = #{totalAmount},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        update purchase_order
+        set status = #{status}
+        where id = #{id}
+    </update>
+
+    <select id="selectItemsByOrderId" resultMap="PurchaseOrderItemResultMap">
+        select
+            poi.id as item_id, poi.purchase_order_id, poi.product_id, poi.quantity, poi.purchase_price, poi.amount,
+            p.product_code, p.product_name, p.spec, p.unit
+        from purchase_order_item poi
+        left join product p on poi.product_id = p.id
+        where poi.purchase_order_id = #{purchaseOrderId}
+    </select>
+
+    <insert id="batchInsertItems">
+        insert into purchase_order_item (
+            purchase_order_id, product_id, quantity, purchase_price, amount
+        ) values
+        <foreach collection="items" item="item" separator=",">
+            (#{item.purchaseOrderId}, #{item.productId}, #{item.quantity}, #{item.purchasePrice}, #{item.amount})
+        </foreach>
+    </insert>
+
+    <delete id="deleteItemsByOrderId" parameterType="java.lang.Long">
+        delete from purchase_order_item where purchase_order_id = #{purchaseOrderId}
+    </delete>
+
+</mapper> 

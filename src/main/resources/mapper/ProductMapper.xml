@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.shixuan.inventory.mapper.ProductMapper">
+    
+    <resultMap id="BaseResultMap" type="org.shixuan.inventory.domain.Product">
+        <id column="id" property="id" />
+        <result column="product_code" property="productCode" />
+        <result column="product_name" property="productName" />
+        <result column="category_id" property="categoryId" />
+        <result column="spec" property="spec" />
+        <result column="unit" property="unit" />
+        <result column="purchase_price" property="purchasePrice" />
+        <result column="sale_price" property="salePrice" />
+        <result column="lower_limit" property="lowerLimit" />
+        <result column="upper_limit" property="upperLimit" />
+        <result column="status" property="status" />
+        <result column="remark" property="remark" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="category_name" property="categoryName" />
+        <result column="stock_quantity" property="stockQuantity" />
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+        p.id, p.product_code, p.product_name, p.category_id, p.spec, p.unit, 
+        p.purchase_price, p.sale_price, p.lower_limit, p.upper_limit, p.status, 
+        p.remark, p.create_time, p.update_time, c.category_name
+    </sql>
+    
+    <select id="selectList" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />,
+        IFNULL(i.quantity, 0) as stock_quantity
+        from product p
+        left join product_category c on p.category_id = c.id
+        left join inventory i on p.id = i.product_id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (p.product_code like concat('%', #{keyword}, '%') 
+                or p.product_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="categoryId != null">
+                and p.category_id = #{categoryId}
+            </if>
+        </where>
+        order by p.product_code
+    </select>
+    
+    <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select 
+        <include refid="Base_Column_List" />,
+        IFNULL(i.quantity, 0) as stock_quantity
+        from product p
+        left join product_category c on p.category_id = c.id
+        left join inventory i on p.id = i.product_id
+        where p.id = #{id}
+    </select>
+    
+    <select id="selectByCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select 
+        <include refid="Base_Column_List" />,
+        IFNULL(i.quantity, 0) as stock_quantity
+        from product p
+        left join product_category c on p.category_id = c.id
+        left join inventory i on p.id = i.product_id
+        where p.product_code = #{productCode}
+    </select>
+    
+    <select id="selectByIds" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />,
+        IFNULL(i.quantity, 0) as stock_quantity
+        from product p
+        left join product_category c on p.category_id = c.id
+        left join inventory i on p.id = i.product_id
+        where p.id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    
+    <insert id="insert" parameterType="org.shixuan.inventory.domain.Product" useGeneratedKeys="true" keyProperty="id">
+        insert into product (
+            product_code, product_name, category_id, spec, unit,
+            purchase_price, sale_price, lower_limit, upper_limit, status, remark
+        )
+        values (
+            #{productCode}, #{productName}, #{categoryId}, #{spec}, #{unit},
+            #{purchasePrice}, #{salePrice}, #{lowerLimit}, #{upperLimit}, #{status}, #{remark}
+        )
+    </insert>
+    
+    <update id="update" parameterType="org.shixuan.inventory.domain.Product">
+        update product
+        <set>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="spec != null">spec = #{spec},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="purchasePrice != null">purchase_price = #{purchasePrice},</if>
+            <if test="salePrice != null">sale_price = #{salePrice},</if>
+            <if test="lowerLimit != null">lower_limit = #{lowerLimit},</if>
+            <if test="upperLimit != null">upper_limit = #{upperLimit},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where id = #{id}
+    </update>
+    
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from product
+        where id = #{id}
+    </delete>
+    
+    <update id="updateStatus">
+        update product
+        set status = #{status}
+        where id = #{id}
+    </update>
+</mapper> 
