@@ -6,23 +6,23 @@
         <id column="id" property="id"/>
         <result column="order_no" property="orderNo"/>
         <result column="customer_id" property="customerId"/>
-        <result column="seller_id" property="sellerId"/>
-        <result column="sales_date" property="salesDate"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="order_date" property="orderDate"/>
         <result column="total_amount" property="totalAmount"/>
         <result column="status" property="status"/>
         <result column="remark" property="remark"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="customer_name" property="customerName"/>
-        <result column="seller_name" property="sellerName"/>
+        <result column="creator_name" property="creatorName"/>
     </resultMap>
 
     <resultMap id="SalesOrderItemResultMap" type="org.shixuan.inventory.domain.SalesOrderItem">
         <id column="item_id" property="id"/>
-        <result column="sales_order_id" property="salesOrderId"/>
+        <result column="order_id" property="salesOrderId"/>
         <result column="product_id" property="productId"/>
         <result column="quantity" property="quantity"/>
-        <result column="sale_price" property="salePrice"/>
+        <result column="unit_price" property="salePrice"/>
         <result column="amount" property="amount"/>
         <result column="product_code" property="productCode"/>
         <result column="product_name" property="productName"/>
@@ -31,7 +31,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        so.id, so.order_no, so.customer_id, so.seller_id, so.sales_date, so.total_amount,
+        so.id, so.order_no, so.customer_id, so.creator_id, so.order_date, so.total_amount,
         so.status, so.remark, so.create_time, so.update_time
     </sql>
 
@@ -39,10 +39,10 @@
         select
         <include refid="Base_Column_List"/>,
         c.customer_name,
-        u.username as seller_name
+        u.username as creator_name
         from sales_order so
         left join customer c on so.customer_id = c.id
-        left join sys_user u on so.seller_id = u.id
+        left join sys_user u on so.creator_id = u.id
         <where>
             <if test="orderNo != null and orderNo != ''">
                 and so.order_no like concat('%', #{orderNo}, '%')
@@ -54,10 +54,10 @@
                 and so.status = #{status}
             </if>
             <if test="startDate != null">
-                and so.sales_date >= #{startDate}
+                and so.order_date >= #{startDate}
             </if>
             <if test="endDate != null">
-                and so.sales_date &lt;= #{endDate}
+                and so.order_date &lt;= #{endDate}
             </if>
         </where>
         order by so.create_time desc
@@ -67,19 +67,19 @@
         select
         <include refid="Base_Column_List"/>,
         c.customer_name,
-        u.username as seller_name
+        u.username as creator_name
         from sales_order so
         left join customer c on so.customer_id = c.id
-        left join sys_user u on so.seller_id = u.id
+        left join sys_user u on so.creator_id = u.id
         where so.id = #{id}
     </select>
 
     <insert id="insert" parameterType="org.shixuan.inventory.domain.SalesOrder" useGeneratedKeys="true" keyProperty="id">
         insert into sales_order (
-            order_no, customer_id, seller_id, sales_date, total_amount,
+            order_no, customer_id, creator_id, order_date, total_amount,
             status, remark
         ) values (
-            #{orderNo}, #{customerId}, #{sellerId}, #{salesDate}, #{totalAmount},
+            #{orderNo}, #{customerId}, #{creatorId}, #{orderDate}, #{totalAmount},
             #{status}, #{remark}
         )
     </insert>
@@ -88,8 +88,8 @@
         update sales_order
         <set>
             <if test="customerId != null">customer_id = #{customerId},</if>
-            <if test="sellerId != null">seller_id = #{sellerId},</if>
-            <if test="salesDate != null">sales_date = #{salesDate},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="orderDate != null">order_date = #{orderDate},</if>
             <if test="totalAmount != null">total_amount = #{totalAmount},</if>
             <if test="status != null">status = #{status},</if>
             <if test="remark != null">remark = #{remark},</if>
@@ -105,24 +105,24 @@
 
     <select id="selectItemsByOrderId" resultMap="SalesOrderItemResultMap">
         select
-            soi.id as item_id, soi.sales_order_id, soi.product_id, soi.quantity, soi.sale_price, soi.amount,
+            si.id as item_id, si.order_id, si.product_id, si.quantity, si.unit_price, si.amount,
             p.product_code, p.product_name, p.spec, p.unit
-        from sales_order_item soi
-        left join product p on soi.product_id = p.id
-        where soi.sales_order_id = #{salesOrderId}
+        from sales_item si
+        left join product p on si.product_id = p.id
+        where si.order_id = #{salesOrderId}
     </select>
 
     <insert id="batchInsertItems">
-        insert into sales_order_item (
-            sales_order_id, product_id, quantity, sale_price, amount
+        insert into sales_item (
+            order_id, product_id, quantity, unit_price
         ) values
         <foreach collection="items" item="item" separator=",">
-            (#{item.salesOrderId}, #{item.productId}, #{item.quantity}, #{item.salePrice}, #{item.amount})
+            (#{item.salesOrderId}, #{item.productId}, #{item.quantity}, #{item.salePrice})
         </foreach>
     </insert>
 
     <delete id="deleteItemsByOrderId" parameterType="java.lang.Long">
-        delete from sales_order_item where sales_order_id = #{salesOrderId}
+        delete from sales_item where order_id = #{salesOrderId}
     </delete>
 
 </mapper> 

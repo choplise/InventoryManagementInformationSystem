@@ -38,10 +38,10 @@ public class FinancialServiceImpl implements FinancialService {
             FinancialRecord record = new FinancialRecord();
             record.setType("采购支出");
             record.setOrderNo(po.getOrderNo());
-            record.setDate(po.getPurchaseDate());
+            record.setDate(po.getOrderDate());
             record.setAmount(po.getTotalAmount().negate()); // 支出为负数
             record.setParty(po.getSupplierName());
-            record.setOperator(po.getPurchaserName());
+            record.setOperator(po.getCreatorName());
             records.add(record);
         }
 
@@ -51,10 +51,10 @@ public class FinancialServiceImpl implements FinancialService {
             FinancialRecord record = new FinancialRecord();
             record.setType("销售收入");
             record.setOrderNo(so.getOrderNo());
-            record.setDate(so.getSalesDate());
+            record.setDate(so.getOrderDate());
             record.setAmount(so.getTotalAmount()); // 收入为正数
             record.setParty(so.getCustomerName());
-            record.setOperator(so.getSellerName());
+            record.setOperator(so.getCreatorName());
             records.add(record);
         }
 

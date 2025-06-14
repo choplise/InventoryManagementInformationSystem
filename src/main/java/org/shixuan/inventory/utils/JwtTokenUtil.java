@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -87,6 +88,17 @@ public class JwtTokenUtil {
     /**
      * 验证token是否还有效
      *
+     * @param token       客户端传入的token
+     * @param userDetails 从数据库中查询出来的用户信息
+     */
+    public boolean validateToken(String token, UserDetails userDetails) {
+        String usernameFromToken = getUserNameFromToken(token);
+        return usernameFromToken != null && usernameFromToken.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    }
+
+    /**
+     * 验证token是否还有效
+     *
      * @param token    客户端传入的token
      * @param username 从数据库中查询出来的用户名
      */
@@ -137,7 +149,7 @@ public class JwtTokenUtil {
     /**
      * 根据负载生成JWT的token
      */
-    private String generateToken(Map<String, Object> claims) {
+    public String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate())
@@ -161,4 +173,15 @@ public class JwtTokenUtil {
         }
         return null;
     }
-} 
+
+    public String getUsernameFromToken(String authToken) {
+        String username;
+        try {
+            Claims claims = getClaimsFromToken(authToken);
+            username = claims.get(CLAIM_KEY_USERNAME, String.class);
+        } catch (Exception e) {
+            username = null;
+        }
+        return username;
+    }
+}

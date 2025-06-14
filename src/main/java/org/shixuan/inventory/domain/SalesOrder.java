@@ -30,14 +30,14 @@ public class SalesOrder implements Serializable {
     private Long customerId;
 
     /**
-     * 销售员ID
+     * 创建人ID
      */
-    private Long sellerId;
+    private Long creatorId;
 
     /**
-     * 销售日期
+     * 订单日期
      */
-    private Date salesDate;
+    private Date orderDate;
 
     /**
      * 总金额
@@ -71,9 +71,9 @@ public class SalesOrder implements Serializable {
     private String customerName;
 
     /**
-     * 销售员名称 (非数据库字段)
+     * 创建人名称 (非数据库字段)
      */
-    private String sellerName;
+    private String creatorName;
 
     /**
      * 销售单明细列表 (非数据库字段)

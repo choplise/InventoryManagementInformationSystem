@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 系统角色实体类
@@ -46,6 +47,11 @@ public class SysRole implements Serializable {
      * 更新时间
      */
     private Date updateTime;
+
+    /**
+     * 角色拥有的权限ID列表 (非数据库字段)
+     */
+    private List<Long> permissionIds;
 
     @Override
     public String toString() {

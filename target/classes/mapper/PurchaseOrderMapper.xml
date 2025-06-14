@@ -6,23 +6,23 @@
         <id column="id" property="id"/>
         <result column="order_no" property="orderNo"/>
         <result column="supplier_id" property="supplierId"/>
-        <result column="purchaser_id" property="purchaserId"/>
-        <result column="purchase_date" property="purchaseDate"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="order_date" property="orderDate"/>
         <result column="total_amount" property="totalAmount"/>
         <result column="status" property="status"/>
         <result column="remark" property="remark"/>
         <result column="create_time" property="createTime"/>
         <result column="update_time" property="updateTime"/>
         <result column="supplier_name" property="supplierName"/>
-        <result column="purchaser_name" property="purchaserName"/>
+        <result column="creator_name" property="creatorName"/>
     </resultMap>
 
     <resultMap id="PurchaseOrderItemResultMap" type="org.shixuan.inventory.domain.PurchaseOrderItem">
         <id column="item_id" property="id"/>
-        <result column="purchase_order_id" property="purchaseOrderId"/>
+        <result column="order_id" property="purchaseOrderId"/>
         <result column="product_id" property="productId"/>
         <result column="quantity" property="quantity"/>
-        <result column="purchase_price" property="purchasePrice"/>
+        <result column="unit_price" property="purchasePrice"/>
         <result column="amount" property="amount"/>
         <result column="product_code" property="productCode"/>
         <result column="product_name" property="productName"/>
@@ -31,7 +31,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        po.id, po.order_no, po.supplier_id, po.purchaser_id, po.purchase_date, po.total_amount,
+        po.id, po.order_no, po.supplier_id, po.creator_id, po.order_date, po.total_amount,
         po.status, po.remark, po.create_time, po.update_time
     </sql>
 
@@ -39,10 +39,10 @@
         select
         <include refid="Base_Column_List"/>,
         s.supplier_name,
-        u.username as purchaser_name
+        u.username as creator_name
         from purchase_order po
         left join supplier s on po.supplier_id = s.id
-        left join sys_user u on po.purchaser_id = u.id
+        left join sys_user u on po.creator_id = u.id
         <where>
             <if test="orderNo != null and orderNo != ''">
                 and po.order_no like concat('%', #{orderNo}, '%')
@@ -54,10 +54,10 @@
                 and po.status = #{status}
             </if>
             <if test="startDate != null">
-                and po.purchase_date >= #{startDate}
+                and po.order_date >= #{startDate}
             </if>
             <if test="endDate != null">
-                and po.purchase_date &lt;= #{endDate}
+                and po.order_date &lt;= #{endDate}
             </if>
         </where>
         order by po.create_time desc
@@ -67,19 +67,19 @@
         select
         <include refid="Base_Column_List"/>,
         s.supplier_name,
-        u.username as purchaser_name
+        u.username as creator_name
         from purchase_order po
         left join supplier s on po.supplier_id = s.id
-        left join sys_user u on po.purchaser_id = u.id
+        left join sys_user u on po.creator_id = u.id
         where po.id = #{id}
     </select>
 
     <insert id="insert" parameterType="org.shixuan.inventory.domain.PurchaseOrder" useGeneratedKeys="true" keyProperty="id">
         insert into purchase_order (
-            order_no, supplier_id, purchaser_id, purchase_date, total_amount,
+            order_no, supplier_id, creator_id, order_date, total_amount,
             status, remark
         ) values (
-            #{orderNo}, #{supplierId}, #{purchaserId}, #{purchaseDate}, #{totalAmount},
+            #{orderNo}, #{supplierId}, #{creatorId}, now(), #{totalAmount},
             #{status}, #{remark}
         )
     </insert>
@@ -88,8 +88,8 @@
         update purchase_order
         <set>
             <if test="supplierId != null">supplier_id = #{supplierId},</if>
-            <if test="purchaserId != null">purchaser_id = #{purchaserId},</if>
-            <if test="purchaseDate != null">purchase_date = #{purchaseDate},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="orderDate != null">order_date = #{orderDate},</if>
             <if test="totalAmount != null">total_amount = #{totalAmount},</if>
             <if test="status != null">status = #{status},</if>
             <if test="remark != null">remark = #{remark},</if>
@@ -105,24 +105,24 @@
 
     <select id="selectItemsByOrderId" resultMap="PurchaseOrderItemResultMap">
         select
-            poi.id as item_id, poi.purchase_order_id, poi.product_id, poi.quantity, poi.purchase_price, poi.amount,
+            poi.id as item_id, poi.order_id, poi.product_id, poi.quantity, poi.unit_price, poi.amount,
             p.product_code, p.product_name, p.spec, p.unit
-        from purchase_order_item poi
+        from purchase_item poi
         left join product p on poi.product_id = p.id
-        where poi.purchase_order_id = #{purchaseOrderId}
+        where poi.order_id = #{purchaseOrderId}
     </select>
 
     <insert id="batchInsertItems">
-        insert into purchase_order_item (
-            purchase_order_id, product_id, quantity, purchase_price, amount
+        insert into purchase_item (
+            order_id, product_id, quantity, unit_price
         ) values
         <foreach collection="items" item="item" separator=",">
-            (#{item.purchaseOrderId}, #{item.productId}, #{item.quantity}, #{item.purchasePrice}, #{item.amount})
+            (#{item.purchaseOrderId}, #{item.productId}, #{item.quantity}, #{item.purchasePrice})
         </foreach>
     </insert>
 
     <delete id="deleteItemsByOrderId" parameterType="java.lang.Long">
-        delete from purchase_order_item where purchase_order_id = #{purchaseOrderId}
+        delete from purchase_item where order_id = #{purchaseOrderId}
     </delete>
 
 </mapper> 
