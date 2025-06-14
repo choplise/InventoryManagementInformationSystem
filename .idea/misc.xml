@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectInspectionProfilesVisibleTreeState">
+    <entry key="Project Default">
+      <profile-state>
+        <expanded-state>
+          <State>
+            <id>AOP</id>
+          </State>
+          <State>
+            <id>Async 代码和 promiseJavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>Bean 验证</id>
+          </State>
+          <State>
+            <id>CDI (上下文和依赖项注入)</id>
+          </State>
+          <State>
+            <id>DOM 问题JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>Dockerfile</id>
+          </State>
+          <State>
+            <id>ES2015 迁移协助JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>EditorConfig</id>
+          </State>
+          <State>
+            <id>Flow 类型检查器JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>GPathGroovy</id>
+          </State>
+          <State>
+            <id>Gradle</id>
+          </State>
+          <State>
+            <id>Groovy</id>
+          </State>
+          <State>
+            <id>HTML</id>
+          </State>
+          <State>
+            <id>Hibernate</id>
+          </State>
+          <State>
+            <id>Import 和依赖项JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>JPA</id>
+          </State>
+          <State>
+            <id>JSP检查</id>
+          </State>
+          <State>
+            <id>JUnitJava</id>
+          </State>
+          <State>
+            <id>JVM 语言</id>
+          </State>
+          <State>
+            <id>Java</id>
+          </State>
+          <State>
+            <id>Java 10Java 语言级别迁移帮助Java</id>
+          </State>
+          <State>
+            <id>Java 11Java 语言级别迁移帮助Java</id>
+          </State>
+          <State>
+            <id>Java 14Java 语言级别迁移帮助Java</id>
+          </State>
+          <State>
+            <id>Java 15Java 语言级别迁移帮助Java</id>
+          </State>
+          <State>
+            <id>Java 16Java 语言级别迁移帮助Java</id>
+          </State>
+          <State>
+            <id>Java 21Java 语言级别迁移帮助Java</id>
+          </State>
+          <State>
+            <id>Java 5Java 语言级别迁移帮助Java</id>
+          </State>
+          <State>
+            <id>Java 7Java 语言级别迁移帮助Java</id>
+          </State>
+          <State>
+            <id>Java 8Java 语言级别迁移帮助Java</id>
+          </State>
+          <State>
+            <id>Java 9Java 语言级别迁移帮助Java</id>
+          </State>
+          <State>
+            <id>Java EE</id>
+          </State>
+          <State>
+            <id>Java 互操作问题Kotlin</id>
+          </State>
+          <State>
+            <id>Java 语言级别迁移帮助Java</id>
+          </State>
+          <State>
+            <id>Java 语言级迁移帮助Java</id>
+          </State>
+          <State>
+            <id>Java 语言级问题Java</id>
+          </State>
+          <State>
+            <id>JavaBeans 问题Java</id>
+          </State>
+          <State>
+            <id>JavaFX</id>
+          </State>
+          <State>
+            <id>JavaScript and TypeScript</id>
+          </State>
+          <State>
+            <id>JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>JavadocJava</id>
+          </State>
+          <State>
+            <id>Kotlin</id>
+          </State>
+          <State>
+            <id>LombokJava</id>
+          </State>
+          <State>
+            <id>Micronaut</id>
+          </State>
+          <State>
+            <id>Micronaut DataMicronaut</id>
+          </State>
+          <State>
+            <id>MicronautMicronaut</id>
+          </State>
+          <State>
+            <id>MongoJS</id>
+          </State>
+          <State>
+            <id>Node.jsJavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>ReactJavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>Spring</id>
+          </State>
+          <State>
+            <id>Spring BootSpring</id>
+          </State>
+          <State>
+            <id>Spring CoreSpring</id>
+          </State>
+          <State>
+            <id>Spring DataSpring</id>
+          </State>
+          <State>
+            <id>Spring IntegrationSpring</id>
+          </State>
+          <State>
+            <id>TestNGJava</id>
+          </State>
+          <State>
+            <id>Thymeleaf</id>
+          </State>
+          <State>
+            <id>Try 语句问题JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>TypeScriptJavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>XMLSpring CoreSpring</id>
+          </State>
+          <State>
+            <id>switch 语句问题JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>toString() 问题Java</id>
+          </State>
+          <State>
+            <id>为 null 性问题可能的 bugJava</id>
+          </State>
+          <State>
+            <id>代码Spring CoreSpring</id>
+          </State>
+          <State>
+            <id>代码成熟度Java</id>
+          </State>
+          <State>
+            <id>代码样式问题Java</id>
+          </State>
+          <State>
+            <id>代码样式问题JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>代码覆盖率</id>
+          </State>
+          <State>
+            <id>代码质量工具JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>依赖性问题Java</id>
+          </State>
+          <State>
+            <id>克隆问题Java</id>
+          </State>
+          <State>
+            <id>其他问题Kotlin</id>
+          </State>
+          <State>
+            <id>内存Java</id>
+          </State>
+          <State>
+            <id>冗余修饰符LombokJava</id>
+          </State>
+          <State>
+            <id>冗余定义LombokJava</id>
+          </State>
+          <State>
+            <id>冗余结构Kotlin</id>
+          </State>
+          <State>
+            <id>函数指标JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>初始化Java</id>
+          </State>
+          <State>
+            <id>单元测试JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>反射访问Java</id>
+          </State>
+          <State>
+            <id>可移植性Java</id>
+          </State>
+          <State>
+            <id>可能不合需要的代码结构JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>可能引起混淆的代码结构Groovy</id>
+          </State>
+          <State>
+            <id>可能引起混淆的代码结构JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>可能的 bugGroovy</id>
+          </State>
+          <State>
+            <id>可能的 bugJava</id>
+          </State>
+          <State>
+            <id>可能的 bugJavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>可能的 bugKotlin</id>
+          </State>
+          <State>
+            <id>可见性Java</id>
+          </State>
+          <State>
+            <id>命名约定Groovy</id>
+          </State>
+          <State>
+            <id>命名约定Java</id>
+          </State>
+          <State>
+            <id>命名约定JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>命名约定Kotlin</id>
+          </State>
+          <State>
+            <id>国际化Java</id>
+          </State>
+          <State>
+            <id>声明冗余Groovy</id>
+          </State>
+          <State>
+            <id>声明冗余Java</id>
+          </State>
+          <State>
+            <id>安全性Java</id>
+          </State>
+          <State>
+            <id>安全性JavaScript and TypeScript</id>
+          </State>
+          <State>
+            <id>完成Java</id>
+          </State>
+          <State>
+            <id>导入Java</id>
+          </State>
+          <State>
+            <id>封装Java</id>
+          </State>
+          <State>
+            <id>属性文件</id>
+          </State>
+          <State>
+            <id>属性文件Java</id>
+          </State>
+          <State>
+            <id>嵌入式性能Java</id>
+          </State>
+          <State>
+            <id>常规</id>
+          </State>
+          <State>
+            <id>常规JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>并发注解问题Java</id>
+          </State>
+          <State>
+            <id>序列化问题Java</id>
+          </State>
+          <State>
+            <id>性能Java</id>
+          </State>
+          <State>
+            <id>打包问题Java</id>
+          </State>
+          <State>
+            <id>抽象问题Java</id>
+          </State>
+          <State>
+            <id>按位运算问题Java</id>
+          </State>
+          <State>
+            <id>按位运算问题JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>控制流问题Groovy</id>
+          </State>
+          <State>
+            <id>控制流问题Java</id>
+          </State>
+          <State>
+            <id>控制流问题JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>数值问题Java</id>
+          </State>
+          <State>
+            <id>数据流Groovy</id>
+          </State>
+          <State>
+            <id>数据流Java</id>
+          </State>
+          <State>
+            <id>数据流JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>方法命名约定Java</id>
+          </State>
+          <State>
+            <id>方法指标Java</id>
+          </State>
+          <State>
+            <id>日志记录JVM 语言</id>
+          </State>
+          <State>
+            <id>日志记录Kotlin</id>
+          </State>
+          <State>
+            <id>有效性问题Gradle</id>
+          </State>
+          <State>
+            <id>有效性问题JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>未使用的符号JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>样式Groovy</id>
+          </State>
+          <State>
+            <id>样式问题Kotlin</id>
+          </State>
+          <State>
+            <id>模块化问题Java</id>
+          </State>
+          <State>
+            <id>正则表达式</id>
+          </State>
+          <State>
+            <id>测试框架JVM 语言</id>
+          </State>
+          <State>
+            <id>测试框架Java</id>
+          </State>
+          <State>
+            <id>类命名约定Java</id>
+          </State>
+          <State>
+            <id>类指标Java</id>
+          </State>
+          <State>
+            <id>类结构Java</id>
+          </State>
+          <State>
+            <id>线程问题Groovy</id>
+          </State>
+          <State>
+            <id>线程问题Java</id>
+          </State>
+          <State>
+            <id>继承问题Java</id>
+          </State>
+          <State>
+            <id>编译器问题Java</id>
+          </State>
+          <State>
+            <id>记录Java</id>
+          </State>
+          <State>
+            <id>详细或冗余的代码结构Java</id>
+          </State>
+          <State>
+            <id>语言注入</id>
+          </State>
+          <State>
+            <id>资源管理Java</id>
+          </State>
+          <State>
+            <id>赋值问题Java</id>
+          </State>
+          <State>
+            <id>赋值问题JavaScript 和 TypeScript</id>
+          </State>
+          <State>
+            <id>转换数值问题Java</id>
+          </State>
+          <State>
+            <id>迁移Kotlin</id>
+          </State>
+          <State>
+            <id>错误处理Java</id>
+          </State>
+        </expanded-state>
+      </profile-state>
+    </entry>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
+  </component>
+</project>

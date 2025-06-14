@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.shixuan.inventory.mapper.InventoryMapper">
+    
+    <resultMap id="BaseResultMap" type="org.shixuan.inventory.domain.Inventory">
+        <id column="id" property="id" />
+        <result column="product_id" property="productId" />
+        <result column="quantity" property="quantity" />
+        <result column="last_update_time" property="lastUpdateTime" />
+        <result column="product_code" property="productCode" />
+        <result column="product_name" property="productName" />
+        <result column="unit" property="unit" />
+        <result column="lower_limit" property="lowerLimit" />
+        <result column="upper_limit" property="upperLimit" />
+        <result column="warning_status" property="warningStatus" />
+    </resultMap>
+    
+    <select id="selectList" resultMap="BaseResultMap">
+        select 
+            i.id, i.product_id, i.quantity, i.last_update_time, 
+            p.product_code, p.product_name, p.unit, p.lower_limit, p.upper_limit,
+            case 
+                when i.quantity &lt; p.lower_limit then 1
+                when i.quantity &gt; p.upper_limit then 2
+                else 0
+            end as warning_status
+        from inventory i
+        inner join product p on i.product_id = p.id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (p.product_code like concat('%', #{keyword}, '%') 
+                or p.product_name like concat('%', #{keyword}, '%'))
+            </if>
+            <if test="warningStatus != null">
+                and (
+                    <choose>
+                        <when test="warningStatus == 1">
+                            i.quantity &lt; p.lower_limit
+                        </when>
+                        <when test="warningStatus == 2">
+                            i.quantity &gt; p.upper_limit
+                        </when>
+                        <otherwise>
+                            i.quantity between p.lower_limit and p.upper_limit
+                        </otherwise>
+                    </choose>
+                )
+            </if>
+        </where>
+        order by p.product_code
+    </select>
+    
+    <select id="selectByProductId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select 
+            i.id, i.product_id, i.quantity, i.last_update_time, 
+            p.product_code, p.product_name, p.unit, p.lower_limit, p.upper_limit,
+            case 
+                when i.quantity &lt; p.lower_limit then 1
+                when i.quantity &gt; p.upper_limit then 2
+                else 0
+            end as warning_status
+        from inventory i
+        inner join product p on i.product_id = p.id
+        where i.product_id = #{productId}
+    </select>
+    
+    <insert id="insert" parameterType="org.shixuan.inventory.domain.Inventory" useGeneratedKeys="true" keyProperty="id">
+        insert into inventory (
+            product_id, quantity
+        )
+        values (
+            #{productId}, #{quantity}
+        )
+    </insert>
+    
+    <update id="updateQuantity">
+        update inventory
+        set quantity = #{quantity},
+            last_update_time = now()
+        where product_id = #{productId}
+    </update>
+    
+    <update id="increaseQuantity">
+        update inventory
+        set quantity = quantity + #{quantity},
+            last_update_time = now()
+        where product_id = #{productId}
+    </update>
+    
+    <update id="decreaseQuantity">
+        update inventory
+        set quantity = quantity - #{quantity},
+            last_update_time = now()
+        where product_id = #{productId} and quantity >= #{quantity}
+    </update>
+</mapper> 

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.shixuan.inventory.mapper.CustomerMapper">
+
+    <resultMap id="BaseResultMap" type="org.shixuan.inventory.domain.Customer">
+        <id column="id" property="id" />
+        <result column="customer_code" property="customerCode" />
+        <result column="customer_name" property="customerName" />
+        <result column="contact" property="contact" />
+        <result column="phone" property="phone" />
+        <result column="address" property="address" />
+        <result column="email" property="email" />
+        <result column="status" property="status" />
+        <result column="remark" property="remark" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, customer_code, customer_name, contact, phone, address, email,
+        status, remark, create_time, update_time
+    </sql>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from customer
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and (customer_code like concat('%', #{keyword}, '%')
+                or customer_name like concat('%', #{keyword}, '%'))
+            </if>
+        </where>
+        order by customer_code
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List" />
+        from customer
+        where id = #{id}
+    </select>
+
+    <select id="selectByCode" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List" />
+        from customer
+        where customer_code = #{customerCode}
+    </select>
+
+    <insert id="insert" parameterType="org.shixuan.inventory.domain.Customer" useGeneratedKeys="true" keyProperty="id">
+        insert into customer (
+            customer_code, customer_name, contact, phone, address, email,
+            status, remark
+        )
+        values (
+            #{customerCode}, #{customerName}, #{contact}, #{phone}, #{address}, #{email},
+            #{status}, #{remark}
+        )
+    </insert>
+
+    <update id="update" parameterType="org.shixuan.inventory.domain.Customer">
+        update customer
+        <set>
+            <if test="customerCode != null">customer_code = #{customerCode},</if>
+            <if test="customerName != null">customer_name = #{customerName},</if>
+            <if test="contact != null">contact = #{contact},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from customer
+        where id = #{id}
+    </delete>
+</mapper> 
