@@ -3,8 +3,6 @@ package org.shixuan.inventory.mapper;
 import org.apache.ibatis.annotations.Param;
 import org.shixuan.inventory.domain.SysUser;
 
-import java.util.List;
-
 /**
  * 用户Mapper接口
  */
@@ -16,7 +14,7 @@ public interface SysUserMapper {
      * @param username 用户名
      * @return 用户对象
      */
-    SysUser findByUsername(String username);
+    SysUser selectByUsername(String username);
     
     /**
      * 通过用户ID查询用户
@@ -24,13 +22,7 @@ public interface SysUserMapper {
      * @param id 用户ID
      * @return 用户对象
      */
-    SysUser findById(Long id);
-    
-    /**
-     * 查询用户列表（包含角色名）
-     * @return 用户列表
-     */
-    List<SysUser> listUsersWithRole();
+    SysUser selectById(Long id);
     
     /**
      * 新增用户

@@ -11,10 +11,10 @@ INSERT INTO `sys_role` (`id`, `role_name`, `role_code`, `description`) VALUES
 
 -- 初始用户: admin/123456, a/1 (BCrypt加密)
 INSERT INTO `sys_user` (`id`, `username`, `password`, `real_name`, `role_id`, `status`) VALUES
-(1, 'admin', '$2a$10$W7q4E2r5UA/lFPRBoMU9d.ufvflQMVlwqbwVR0kDWev8EvhKHCZu.', '管理员', 1, 1),
-(2, 'purchase', '$2a$10$W7q4E2r5UA/lFPRBoMU9d.ufvflQMVlwqbwVR0kDWev8EvhKHCZu.', '采购员张三', 2, 1),
-(3, 'sales', '$2a$10$W7q4E2r5UA/lFPRBoMU9d.ufvflQMVlwqbwVR0kDWev8EvhKHCZu.', '销售员李四', 3, 1),
-(4, 'warehouse', '$2a$10$W7q4E2r5UA/lFPRBoMU9d.ufvflQMVlwqbwVR0kDWev8EvhKHCZu.', '库管员王五', 4, 1);
+(1, 'admin', '$2a$10$w4rY.1zO/j1jZ7p5bJ.M.e9v.wY2U5.jO/T.L6k4G0G2p.Z5y.J/O', '管理员', 1, 1),
+(2, 'purchase', '$2a$10$w4rY.1zO/j1jZ7p5bJ.M.e9v.wY2U5.jO/T.L6k4G0G2p.Z5y.J/O', '采购员张三', 2, 1),
+(3, 'sales', '$2a$10$w4rY.1zO/j1jZ7p5bJ.M.e9v.wY2U5.jO/T.L6k4G0G2p.Z5y.J/O', '销售员李四', 3, 1),
+(4, 'warehouse', '$2a$10$w4rY.1zO/j1jZ7p5bJ.M.e9v.wY2U5.jO/T.L6k4G0G2p.Z5y.J/O', '库管员王五', 4, 1);
 
 -- 商品分类
 INSERT INTO `product_category` (`id`, `category_name`, `parent_id`, `sort_order`) VALUES

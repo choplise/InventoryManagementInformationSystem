@@ -6,7 +6,6 @@ import org.shixuan.inventory.dto.Result;
 import org.shixuan.inventory.enums.ResultCode;
 import org.shixuan.inventory.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/customer")
-@PreAuthorize("hasAuthority('data:customer')")
 public class CustomerController {
 
     @Autowired

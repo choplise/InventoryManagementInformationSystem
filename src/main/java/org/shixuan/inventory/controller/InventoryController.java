@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -33,7 +32,6 @@ public class InventoryController {
     /**
      * 分页查询库存列表
      */
-    @PreAuthorize("hasAuthority('inventory:query')")
     @GetMapping("/page")
     public Result<PageResult<Inventory>> getInventoryPage(
             @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
