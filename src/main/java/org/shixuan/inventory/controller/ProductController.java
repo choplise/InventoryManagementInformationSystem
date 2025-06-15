@@ -8,7 +8,6 @@ import org.shixuan.inventory.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -26,7 +25,6 @@ public class ProductController {
     /**
      * 分页查询商品列表
      */
-    @PreAuthorize("hasAuthority('data:product')")
     @GetMapping("/page")
     public Result<PageResult<Product>> getProductPage(
             @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
@@ -41,7 +39,6 @@ public class ProductController {
     /**
      * 根据ID获取商品
      */
-    @PreAuthorize("hasAuthority('data:product')")
     @GetMapping("/{id}")
     public Result<Product> getProductById(@PathVariable("id") Long id) {
         Product product = productService.getProductById(id);
@@ -66,7 +63,6 @@ public class ProductController {
     /**
      * 添加商品
      */
-    @PreAuthorize("hasAuthority('data:product:create')")
     @PostMapping
     public Result<Long> addProduct(@RequestBody Product product) {
         Long id = productService.addProduct(product);
@@ -76,7 +72,6 @@ public class ProductController {
     /**
      * 更新商品
      */
-    @PreAuthorize("hasAuthority('data:product:update')")
     @PutMapping("/{id}")
     public Result<Boolean> updateProduct(@PathVariable("id") Long id, @RequestBody Product product) {
         product.setId(id);
@@ -87,7 +82,6 @@ public class ProductController {
     /**
      * 删除商品
      */
-    @PreAuthorize("hasAuthority('data:product:delete')")
     @DeleteMapping("/{id}")
     public Result<Boolean> deleteProduct(@PathVariable("id") Long id) {
         boolean success = productService.deleteProduct(id);

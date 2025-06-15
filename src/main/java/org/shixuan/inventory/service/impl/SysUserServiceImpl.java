@@ -12,11 +12,8 @@ import org.shixuan.inventory.utils.JwtTokenUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import org.springframework.util.Assert;
 
 /**
  * 用户服务实现类
@@ -26,8 +23,8 @@ public class SysUserServiceImpl implements SysUserService {
     
     private static final Logger LOGGER = LoggerFactory.getLogger(SysUserServiceImpl.class);
     
-    private final SysUserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private SysUserMapper userMapper;
     
     @Autowired
     private SysRoleMapper roleMapper;
@@ -35,15 +32,12 @@ public class SysUserServiceImpl implements SysUserService {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
     
-    public SysUserServiceImpl(SysUserMapper userMapper, PasswordEncoder passwordEncoder) {
-        this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
         // 查询用户
-        SysUser user = userMapper.findByUsername(loginRequest.getUsername());
+        SysUser user = userMapper.selectByUsername(loginRequest.getUsername());
         if (user == null) {
             throw new ServiceException("用户不存在");
         }
@@ -71,20 +65,26 @@ public class SysUserServiceImpl implements SysUserService {
         LoginResponse.UserInfo userInfo = new LoginResponse.UserInfo(
                 user.getId(), 
                 user.getUsername(), 
-                user.getRoleId());
+                user.getRealName(), 
+                role.getRoleName());
         
         return new LoginResponse(token, userInfo);
     }
     
     @Override
+    public SysUser getUserByUsername(String username) {
+        return userMapper.selectByUsername(username);
+    }
+    
+    @Override
     public SysUser getUserById(Long id) {
-        return userMapper.findById(id);
+        return userMapper.selectById(id);
     }
     
     @Override
     public boolean updatePassword(Long userId, String oldPassword, String newPassword) {
         // 查询用户
-        SysUser user = userMapper.findById(userId);
+        SysUser user = userMapper.selectById(userId);
         if (user == null) {
             throw new ServiceException("用户不存在");
         }
@@ -95,48 +95,10 @@ public class SysUserServiceImpl implements SysUserService {
         }
         
         // 加密新密码
-        String newEncodedPassword = passwordEncoder.encode(newPassword);
+        String encodedPassword = passwordEncoder.encode(newPassword);
         
         // 更新密码
-        int rows = userMapper.updatePassword(userId, newEncodedPassword);
+        int rows = userMapper.updatePassword(userId, encodedPassword);
         return rows > 0;
-    }
-
-    @Override
-    public PageInfo<SysUser> listUsers(int pageNum, int pageSize) {
-        PageHelper.startPage(pageNum, pageSize);
-        // 查询时需要关联角色名称
-        return new PageInfo<>(userMapper.listUsersWithRole());
-    }
-
-    @Override
-    public SysUser findUserById(Long id) {
-        return userMapper.findById(id);
-    }
-
-    @Override
-    public SysUser createUser(SysUser user) {
-        // 对密码进行加密
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userMapper.insert(user);
-        return user;
-    }
-
-    @Override
-    public SysUser updateUser(SysUser user) {
-        // 不允许通过此接口修改密码
-        user.setPassword(null);
-        userMapper.update(user);
-        return findUserById(user.getId()); // 返回更新后的完整信息
-    }
-
-    @Override
-    public void deleteUser(Long id) {
-        userMapper.deleteById(id);
-    }
-
-    @Override
-    public SysUser findByUsername(String username) {
-        return userMapper.findByUsername(username);
     }
 } 

@@ -79,7 +79,7 @@
             order_no, customer_id, creator_id, order_date, total_amount,
             status, remark
         ) values (
-            #{orderNo}, #{customerId}, #{creatorId}, #{orderDate}, #{totalAmount},
+            #{orderNo}, #{customerId}, #{creatorId}, now(), #{totalAmount},
             #{status}, #{remark}
         )
     </insert>

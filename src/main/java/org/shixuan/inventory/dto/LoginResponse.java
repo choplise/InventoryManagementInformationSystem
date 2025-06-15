@@ -32,12 +32,9 @@ public class LoginResponse implements Serializable {
         this.userInfo = userInfo;
     }
 
-
     /**
      * 用户信息
      */
-    @Setter
-    @Getter
     public static class UserInfo {
         /**
          * 用户ID
@@ -57,16 +54,48 @@ public class LoginResponse implements Serializable {
         /**
          * 角色名称
          */
-        private Long roleId;
+        private String roleName;
         
         public UserInfo() {
         }
         
-        public UserInfo(Long id, String username,  Long roleId) {
+        public UserInfo(Long id, String username, String realName, String roleName) {
             this.id = id;
             this.username = username;
-            this.roleId = roleId;
+            this.realName = realName;
+            this.roleName = roleName;
         }
-
+        
+        public Long getId() {
+            return id;
+        }
+        
+        public void setId(Long id) {
+            this.id = id;
+        }
+        
+        public String getUsername() {
+            return username;
+        }
+        
+        public void setUsername(String username) {
+            this.username = username;
+        }
+        
+        public String getRealName() {
+            return realName;
+        }
+        
+        public void setRealName(String realName) {
+            this.realName = realName;
+        }
+        
+        public String getRoleName() {
+            return roleName;
+        }
+        
+        public void setRoleName(String roleName) {
+            this.roleName = roleName;
+        }
     }
 } 

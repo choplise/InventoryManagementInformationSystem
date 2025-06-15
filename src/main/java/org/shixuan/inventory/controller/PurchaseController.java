@@ -8,7 +8,6 @@ import org.shixuan.inventory.service.PurchaseService;
 import org.shixuan.inventory.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,10 +24,12 @@ public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
 
+    @Autowired
+    private SysUserService sysUserService; // 假设有一个用户服务来获取当前用户信息
+
     /**
      * 分页查询采购单
      */
-    @PreAuthorize("hasAuthority('business:purchase')")
     @GetMapping("/page")
     public Result<PageResult<PurchaseOrder>> queryPurchaseOrders(
             @RequestParam(defaultValue = "1") int pageNum,
@@ -45,7 +46,6 @@ public class PurchaseController {
     /**
      * 创建采购单
      */
-    @PreAuthorize("hasAuthority('business:purchase:create')")
     @PostMapping
     public Result<PurchaseOrder> createPurchaseOrder(HttpServletRequest request,@RequestBody PurchaseOrder purchaseOrder) {
         // TODO: 从token中获取当前用户ID，并设置为采购员ID
@@ -59,7 +59,6 @@ public class PurchaseController {
     /**
      * 获取采购单详情
      */
-    @PreAuthorize("hasAuthority('business:purchase')")
     @GetMapping("/{id}")
     public Result<PurchaseOrder> getPurchaseOrderDetails(@PathVariable Long id) {
         PurchaseOrder order = purchaseService.getPurchaseOrderDetails(id);
@@ -82,7 +81,6 @@ public class PurchaseController {
     /**
      * 审核采购单
      */
-    @PreAuthorize("hasAuthority('business:purchase:approve')")
     @PostMapping("/{id}/approve")
     public Result<Void> approvePurchaseOrder(@PathVariable Long id) {
         boolean success = purchaseService.approvePurchaseOrder(id);
@@ -92,7 +90,6 @@ public class PurchaseController {
     /**
      * 执行采购入库
      */
-    @PreAuthorize("hasAuthority('business:purchase:stock-in')")
     @PostMapping("/{id}/stock-in")
     public Result<Void> executeStockIn(@PathVariable Long id, @RequestBody Map<String, Long> payload) {
         Long operatorId = payload.get("operatorId"); // 前端应传来操作员ID，或从token中解析

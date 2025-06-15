@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.shixuan.inventory.mapper.PurchaseReturnMapper">
+
+    <resultMap id="PurchaseReturnResultMap" type="org.shixuan.inventory.domain.PurchaseReturn">
+        <id column="id" property="id"/>
+        <result column="return_no" property="returnNo"/>
+        <result column="purchase_order_id" property="purchaseOrderId"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="return_date" property="returnDate"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="supplier_name" property="supplierName"/>
+        <result column="creator_name" property="creatorName"/>
+    </resultMap>
+
+    <resultMap id="PurchaseReturnItemResultMap" type="org.shixuan.inventory.domain.PurchaseReturnItem">
+        <id column="item_id" property="id"/>
+        <result column="return_id" property="purchaseReturnId"/>
+        <result column="product_id" property="productId"/>
+        <result column="quantity" property="quantity"/>
+        <result column="unit_price" property="purchasePrice"/>
+        <result column="amount" property="amount"/>
+        <result column="product_code" property="productCode"/>
+        <result column="product_name" property="productName"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        pr.id, pr.return_no, pr.purchase_order_id, pr.supplier_id, pr.creator_id, pr.return_date, pr.total_amount,
+        pr.status, pr.remark, pr.create_time, pr.update_time
+    </sql>
+
+    <select id="selectList" resultMap="PurchaseReturnResultMap">
+        select
+        <include refid="Base_Column_List"/>,
+        s.supplier_name,
+        u.username as creator_name
+        from purchase_return pr
+        left join supplier s on pr.supplier_id = s.id
+        left join sys_user u on pr.creator_id = u.id
+        <where>
+            <if test="returnNo != null and returnNo != ''">
+                and pr.return_no like concat('%', #{returnNo}, '%')
+            </if>
+            <if test="supplierId != null">
+                and pr.supplier_id = #{supplierId}
+            </if>
+            <if test="status != null">
+                and pr.status = #{status}
+            </if>
+            <if test="startDate != null">
+                and pr.return_date >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                and pr.return_date &lt;= #{endDate}
+            </if>
+        </where>
+        order by pr.create_time desc
+    </select>
+
+    <select id="selectById" resultMap="PurchaseReturnResultMap">
+        select
+        <include refid="Base_Column_List"/>,
+        s.supplier_name,
+        u.username as creator_name
+        from purchase_return pr
+        left join supplier s on pr.supplier_id = s.id
+        left join sys_user u on pr.creator_id = u.id
+        where pr.id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="org.shixuan.inventory.domain.PurchaseReturn" useGeneratedKeys="true" keyProperty="id">
+        insert into purchase_return (
+        return_no, purchase_order_id, supplier_id, creator_id, return_date, total_amount,
+        status, remark
+        ) values (
+        #{returnNo}, #{purchaseOrderId}, #{supplierId}, #{creatorId}, now(), #{totalAmount},
+        #{status}, #{remark}
+        )
+    </insert>
+
+    <update id="update" parameterType="org.shixuan.inventory.domain.PurchaseReturn">
+        update purchase_return
+        <set>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="returnDate != null">return_date = #{returnDate},</if>
+            <if test="totalAmount != null">total_amount = #{totalAmount},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        update purchase_return
+        set status = #{status}
+        where id = #{id}
+    </update>
+
+    <select id="selectItemsByReturnId" resultMap="PurchaseReturnItemResultMap">
+        select
+        pri.id as item_id, pri.return_id, pri.product_id, pri.quantity, pri.unit_price, pri.amount,
+        p.product_code, p.product_name, p.spec, p.unit
+        from purchase_return_item pri
+        left join product p on pri.product_id = p.id
+        where pri.return_id = #{purchaseReturnId}
+    </select>
+
+    <insert id="batchInsertItems">
+        insert into purchase_return_item (
+        return_id, product_id, quantity, unit_price
+        ) values
+        <foreach collection="items" item="item" separator=",">
+            (#{item.purchaseReturnId}, #{item.productId}, #{item.quantity}, #{item.purchasePrice})
+        </foreach>
+    </insert>
+
+    <delete id="deleteItemsByReturnId" parameterType="java.lang.Long">
+        delete from purchase_return_item where return_id = #{purchaseReturnId}
+    </delete>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from purchase_return where id = #{id}
+    </delete>
+
+</mapper> 

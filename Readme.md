@@ -291,11 +291,11 @@
   }
   ```
 --**`GET /inventory/product/{productId}`**: 根据Id获取单个商品库存详情。
-    - **请求示例**: `/api/inventory/product/1`
-  - **成功响应**: (单个库存对象，结构同上)
+- **请求示例**: `/api/inventory/product/1`
+- **成功响应**: (单个库存对象，结构同上)
 
 - **`GET /inventory/warnings`**: 查询库存预警信息。
-  - **请求示例**: `/api/inventory/warning` 
+  - **请求示例**: `/api/inventory/warning`
     - **成功响应** (`200 OK`):
     ```json
     {
@@ -311,9 +311,9 @@
     ```
 - **`POST /inventory/increase`**: 执行库存入库操作。
   - **请求体**: `{"productId": 1, "quantity": 100, "changeType": """operatorId": 1, "relatedOrderNo": "PO20231027001"}`
-  - 变动类型 (1:采购入库, 2:销售出库, 3:采购退货, 4:销售退货, 5:库存盘点) 
+  - 变动类型 (1:采购入库, 2:销售出库, 3:采购退货, 4:销售退货, 5:库存盘点)
   - **成功响应**: `{"code": 200, "message": "操作成功", "data": null}`
-  
+
 - **`POST /inventory/decrease`**: 执行库存出库操作。
   - **请求体**: `{"productId": 1, "quantity": 50, "changeType": 2, "operatorId": 1, "relatedOrderNo": "SO20231028001"}`
   - **成功响应**: `{"code": 200, "message": "操作成功", "data": null}`
@@ -474,6 +474,119 @@
 - **描述**: 作废一个采购订单。
 - **成功响应**: `{"code": 200, "message": "操作成功", "data": null}`
 
+#### 5.8 采购退货
+
+##### 5.8.1 分页查询采购退货单
+- **`GET /purchase-returns`**
+- **描述**: 根据条件分页查询采购退货单列表。
+- **请求参数 (Query)**:
+  - `pageNum` (可选, 默认1): 页码
+  - `pageSize` (可选, 默认10): 每页数量
+  - `returnNo` (可选): 退货单号 (模糊查询)
+  - `supplierId` (可选): 供应商ID
+  - `status` (可选): 订单状态 (0:待审核, 1:已审核, 2:已出库, -1:已作废)
+  - `startDate` (可选, yyyy-MM-dd): 退货日期范围（开始）
+  - `endDate` (可选, yyyy-MM-dd): 退货日期范围（结束）
+- **请求示例**: `/api/purchase-returns?pageNum=1&pageSize=10&status=1`
+- **成功响应** (`200 OK`):
+  ```json
+  {
+      "code": 200,
+      "message": "操作成功",
+      "data": {
+          "total": 1,
+          "list": [
+              {
+                  "id": 1,
+                  "returnNo": "PR20231101001",
+                  "purchaseOrderId": 10,
+                  "supplierId": 1,
+                  "creatorId": 1,
+                  "returnDate": "2023-11-01",
+                  "totalAmount": 110.00,
+                  "status": 1,
+                  "supplierName": "上海晨光文具",
+                  "creatorName": "admin"
+              }
+          ],
+          "pageNum": 1,
+          "pageSize": 10
+      }
+  }
+  ```
+
+##### 5.8.2 获取采购退货单详情
+- **`GET /purchase-returns/{id}`**
+- **描述**: 根据ID获取单个采购退货单的详细信息，包含商品明细。
+- **请求示例**: `/api/purchase-returns/1`
+- **成功响应** (`200 OK`):
+  ```json
+  {
+      "code": 200,
+      "message": "操作成功",
+      "data": {
+          "id": 1,
+          "returnNo": "PR20231101001",
+          "purchaseOrderId": 10,
+          "supplierId": 1,
+          "creatorId": 1,
+          "returnDate": "2023-11-01",
+          "totalAmount": 110.00,
+          "status": 1,
+          "remark": "质量问题退货",
+          "supplierName": "上海晨光文具",
+          "creatorName": "admin",
+          "items": [
+              {
+                  "productId": 1,
+                  "quantity": 20,
+                  "purchasePrice": 5.50,
+                  "amount": 110.00,
+                  "productName": "晨光笔记本"
+              }
+          ]
+      }
+  }
+  ```
+
+##### 5.8.3 创建采购退货单
+- **`POST /purchase-returns`**
+- **描述**: 创建一个新的采购退货单。`creatorId` 应为当前操作员ID。
+- **请求体** (`application/json`): `PurchaseReturnDTO`
+  ```json
+  {
+    "purchaseOrderId": 10,
+    "supplierId": 1,
+    "creatorId": 1,
+    "returnDate": "2023-11-01",
+    "remark": "质量问题退货",
+    "items": [
+      {
+        "productId": 1,
+        "quantity": 20,
+        "purchasePrice": 5.50
+      }
+    ]
+  }
+  ```
+- **成功响应**: (`200 OK`, 返回创建后的采购退货单详情，结构同5.8.2)
+
+##### 5.8.4 更新采购退货单
+- **`PUT /purchase-returns/{id}`**
+- **描述**: 更新一个**未审核**的采购退货单。
+- **请求体**: (结构同5.8.3)
+- **成功响应**: (`200 OK`, 返回更新后的采购退货单详情)
+
+##### 5.8.5 审核采购退货单
+- **`POST /purchase-returns/{id}/audit`**
+- **描述**: 审核一个**待审核**的采购退货单，审核后将扣减库存。
+- **成功响应**: `{"code": 200, "message": "操作成功", "data": null}`
+
+##### 5.8.6 删除采购退货单
+- **`DELETE /purchase-returns/{id}`**
+- **描述**: 删除一个采购退货单，仅**未审核**的单据可删除。
+- **成功响应**: `{"code": 200, "message": "操作成功", "data": null}`
+
 ---
 
 ### 6. 销售管理 (Sales)
@@ -603,6 +716,119 @@
 - **描述**: 作废一个销售订单。已出库的订单不能作废。
 - **成功响应**: `{"code": 200, "message": "操作成功", "data": null}`
 
+#### 6.8 销售退货
+
+##### 6.8.1 分页查询销售退货单
+- **`GET /sales-returns`**
+- **描述**: 根据条件分页查询销售退货单列表。
+- **请求参数 (Query)**:
+  - `pageNum` (可选, 默认1): 页码
+  - `pageSize` (可选, 默认10): 每页数量
+  - `returnNo` (可选): 退货单号 (模糊查询)
+  - `customerId` (可选): 客户ID
+  - `status` (可选): 订单状态 (0:待审核, 1:已审核, 2:已入库, -1:已作废)
+  - `startDate` (可选, yyyy-MM-dd): 退货日期范围（开始）
+  - `endDate` (可选, yyyy-MM-dd): 退货日期范围（结束）
+- **请求示例**: `/api/sales-returns?pageNum=1&pageSize=10&status=1`
+- **成功响应** (`200 OK`):
+  ```json
+  {
+      "code": 200,
+      "message": "操作成功",
+      "data": {
+          "total": 1,
+          "list": [
+              {
+                  "id": 1,
+                  "returnNo": "SR20231101001",
+                  "salesOrderId": 25,
+                  "customerId": 2,
+                  "creatorId": 1,
+                  "returnDate": "2023-11-01",
+                  "totalAmount": 160.00,
+                  "status": 1,
+                  "customerName": "某客户公司",
+                  "creatorName": "admin"
+              }
+          ],
+          "pageNum": 1,
+          "pageSize": 10
+      }
+  }
+  ```
+
+##### 6.8.2 获取销售退货单详情
+- **`GET /sales-returns/{id}`**
+- **描述**: 根据ID获取单个销售退货单的详细信息，包含商品明细。
+- **请求示例**: `/api/sales-returns/1`
+- **成功响应** (`200 OK`):
+  ```json
+  {
+      "code": 200,
+      "message": "操作成功",
+      "data": {
+          "id": 1,
+          "returnNo": "SR20231101001",
+          "salesOrderId": 25,
+          "customerId": 2,
+          "creatorId": 1,
+          "returnDate": "2023-11-01",
+          "totalAmount": 160.00,
+          "status": 1,
+          "remark": "客户退货",
+          "customerName": "某客户公司",
+          "creatorName": "admin",
+          "items": [
+              {
+                  "productId": 1,
+                  "quantity": 20,
+                  "salePrice": 8.00,
+                  "amount": 160.00,
+                  "productName": "晨光笔记本"
+              }
+          ]
+      }
+  }
+  ```
+
+##### 6.8.3 创建销售退货单
+- **`POST /sales-returns`**
+- **描述**: 创建一个新的销售退货单。`creatorId` 应为当前操作员ID。
+- **请求体** (`application/json`): `SalesReturnDTO`
+  ```json
+  {
+    "salesOrderId": 25,
+    "customerId": 2,
+    "creatorId": 1,
+    "returnDate": "2023-11-01",
+    "remark": "客户退货",
+    "items": [
+      {
+        "productId": 1,
+        "quantity": 20,
+        "salePrice": 8.00
+      }
+    ]
+  }
+  ```
+- **成功响应**: (`200 OK`, 返回创建后的销售退货单详情，结构同6.8.2)
+
+##### 6.8.4 更新销售退货单
+- **`PUT /sales-returns/{id}`**
+- **描述**: 更新一个**未审核**的销售退货单。
+- **请求体**: (结构同6.8.3)
+- **成功响应**: (`200 OK`, 返回更新后的销售退货单详情)
+
+##### 6.8.5 审核销售退货单
+- **`POST /sales-returns/{id}/audit`**
+- **描述**: 审核一个**待审核**的销售退货单，审核后将增加库存。
+- **成功响应**: `{"code": 200, "message": "操作成功", "data": null}`
+
+##### 6.8.6 删除销售退货单
+- **`DELETE /sales-returns/{id}`**
+- **描述**: 删除一个销售退货单，仅**未审核**的单据可删除。
+- **成功响应**: `{"code": 200, "message": "操作成功", "data": null}`
+
 ---
 
 ### 7. 财务管理 (Financial)
@@ -671,12 +897,6 @@
   - **描述**: 获取所有客户的列表，通常用于下拉选择框。
   - **成功响应**: 返回客户对象数组 `[{"id": 1, "customerName": "客户A"}, ...]`
 
-- **`GET /customer/{id}`**
-  - **描述**: 根据ID获取单个客户的详细信息。
-  - **成功响应**: 返回单个客户对象。
-
-- **`POST /customer`**
-  - **描述**: 新增一个客户。
   - **请求体** (`application/json`):
     ```json
     {
@@ -697,78 +917,31 @@
 
 ---
 
-### 9. 系统管理 (Role)
+### 9. 销售退货管理 (Sales Return)
 
-- **`GET /roles/page`**
-  - **描述**: 分页查询角色列表，支持按角色名称模糊搜索。
-  - **请求示例**: `/api/roles/page?pageNum=1&pageSize=10&roleName=管理员`
-  - **成功响应** (`200 OK`):
-    ```json
-    {
-        "code": 200,
-        "message": "操作成功",
-        "data": {
-            "total": 1,
-            "list": [
-                {
-                    "id": 1,
-                    "roleName": "超级管理员",
-                    "roleCode": "ADMIN",
-                    "description": "拥有所有权限"
-                }
-            ],
-            "pageNum": 1,
-            "pageSize": 10
-        }
-    }
-    ```
+- **`GET /sales-returns`**: 查询销售退货单列表。
+  - **请求参数**: `returnNo` (退货单号), `customerId` (客户ID), `status` (状态), `startDate`, `endDate`
+- **`GET /sales-returns/{id}`**: 获取销售退货单详情。
+- **`POST /sales-returns`**: 创建销售退货单。
+  - **请求体**: `SalesReturnDTO` 对象。
+- **`PUT /sales-returns/{id}`**: 更新销售退货单。
+  - **请求体**: `SalesReturnDTO` 对象。
+- **`DELETE /sales-returns/{id}`**: 删除销售退货单。
+- **`POST /sales-returns/{id}/audit`**: 审核销售退货单。
 
-- **`GET /roles/list`**
-  - **描述**: 获取所有角色的列表，通常用于给用户分配角色时的下拉选择框。
-  - **成功响应**: 返回角色对象数组 `[{"id": 1, "roleName": "超级管理员"}, ...]`
+---
 
-- **`GET /roles/{id}`**
-  - **描述**: 根据ID获取角色详情，结果中会包含该角色拥有的权限ID列表。
-  - **成功响应** (`200 OK`):
-    ```json
-    {
-        "code": 200,
-        "message": "操作成功",
-        "data": {
-            "id": 1,
-            "roleName": "超级管理员",
-            "roleCode": "ADMIN",
-            "description": "拥有所有权限",
-            "permissionIds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
-        }
-    }
-    ```
+### 10. 采购退货管理 (Purchase Return)
 
-- **`POST /roles`**
-  - **描述**: 新增一个角色。
-  - **请求体** (`application/json`):
-    ```json
-    {
-      "roleName": "财务角色",
-      "roleCode": "FINANCE",
-      "description": "负责财务管理"
-    }
-    ```
-
-- **`PUT /roles/{id}`**
-  - **描述**: 更新指定ID的角色信息。
-  - **请求体**: (结构同上)
-
-- **`DELETE /roles/{id}`**
-  - **描述**: 删除指定ID的角色。
-
-- **`POST /roles/{id}/permissions`**
-  - **描述**: 为指定ID的角色分配权限。此操作会覆盖该角色原有的所有权限。
-  - **请求体** (`application/json`):
-    ```json
-    [1, 2, 5, 8]
-    ```
-  - **说明**: 请求体是一个包含权限ID的数组。
+- **`GET /purchase-returns`**: 查询采购退货单列表。
+  - **请求参数**: `returnNo` (退货单号), `supplierId` (供应商ID), `status` (状态), `startDate`, `endDate`
+- **`GET /purchase-returns/{id}`**: 获取采购退货单详情。
+- **`POST /purchase-returns`**: 创建采购退货单。
+  - **请求体**: `PurchaseReturnDTO` 对象。
+- **`PUT /purchase-returns/{id}`**: 更新采购退货单。
+  - **请求体**: `PurchaseReturnDTO` 对象。
+- **`DELETE /purchase-returns/{id}`**: 删除采购退货单。
+- **`POST /purchase-returns/{id}/audit`**: 审核采购退货单。
 
 ## 系统部署
 1. 克隆项目到本地
@@ -780,210 +953,3 @@
 ## 开发团队
 - 技术支持：朱世轩
 - 联系邮箱：1984057971@qq.com 
-
-### 八、系统管理 (System)
-
-#### 1. 用户管理 (User)
-
-##### 1.1 分页查询用户列表
-
-- **URL**: `/user/page`
-- **Method**: `GET`
-- **权限**: `sys:user`
-- **Query Params**:
-  - `pageNum` (optional, default: 1): 页码
-  - `pageSize` (optional, default: 10): 每页数量
-- **响应示例**:
-  ```json
-  {
-    "code": 200,
-    "message": "操作成功",
-    "data": {
-      "total": 1,
-      "list": [
-        {
-          "id": 2,
-          "username": "admin",
-          "roleId": 1,
-          "roleName": "超级管理员"
-        }
-      ]
-    }
-  }
-  ```
-
-##### 1.2 创建用户
-
-- **URL**: `/user`
-- **Method**: `POST`
-- **权限**: `sys:user`
-- **Request Body**:
-  ```json
-  {
-    "username": "newuser",
-    "password": "password123",
-    "roleId": 2
-  }
-  ```
-- **响应示例**:
-  ```json
-  {
-    "code": 200,
-    "message": "操作成功",
-    "data": {
-      "id": 3,
-      "username": "newuser",
-      "roleId": 2
-    }
-  }
-  ```
-
-##### 1.3 更新用户（分配角色）
-
-- **URL**: `/user/{id}`
-- **Method**: `PUT`
-- **权限**: `sys:user`
-- **Request Body**:
-  ```json
-  {
-    "username": "updateduser",
-    "roleId": 3
-  }
-  ```
-- **响应示例**:
-  ```json
-  {
-    "code": 200,
-    "message": "操作成功",
-    "data": {
-      "id": 3,
-      "username": "updateduser",
-      "roleId": 3,
-      "roleName": "销售主管"
-    }
-  }
-  ```
-
-##### 1.4 删除用户
-
-- **URL**: `/user/{id}`
-- **Method**: `DELETE`
-- **权限**: `sys:user`
-- **响应示例**:
-  ```json
-  {
-    "code": 200,
-    "message": "操作成功",
-    "data": null
-  }
-  ```
-
-#### 2. 角色管理 (Role)
-
-##### 2.1 分页查询角色列表
-
-- **URL**: `/role/page`
-- **Method**: `GET`
-- **权限**: `sys:role`
-- **响应示例**:
-  ```json
-  {
-    "code": 200,
-    "message": "操作成功",
-    "data": {
-      "total": 2,
-      "list": [
-        {
-          "id": 1,
-          "roleName": "超级管理员",
-          "roleCode": "ADMIN",
-          "description": "系统最高权限"
-        }
-      ]
-    }
-  }
-  ```
-  
-##### 2.2 获取所有角色列表（用于下拉框）
-
-- **URL**: `/role/list`
-- **Method**: `GET`
-- **权限**: `sys:role`
-
-##### 2.3 创建角色
-
-- **URL**: `/role`
-- **Method**: `POST`
-- **权限**: `sys:role`
-- **Request Body**:
-  ```json
-  {
-    "roleName": "销售员",
-    "roleCode": "SALES",
-    "description": "负责销售业务"
-  }
-  ```
-
-##### 2.4 为角色分配权限
-
-- **URL**: `/role/{roleId}/permissions`
-- **Method**: `POST`
-- **权限**: `sys:role:assign_permissions`
-- **Request Body**: `[13, 14, 15, 36, 37, 38, 39]` (权限ID列表)
-
-#### 3. 权限管理 (Permission)
-
-##### 3.1 获取所有权限（树状结构）
-
-- **URL**: `/permission/tree`
-- **Method**: `GET`
-- **权限**: `sys:permission`
-- **响应示例**:
-  ```json
-  {
-    "code": 200,
-    "message": "操作成功",
-    "data": [
-      {
-        "id": 1,
-        "permissionName": "系统管理",
-        "permissionCode": "sys",
-        "parentId": 0,
-        "type": 1,
-        "children": [
-          {
-            "id": 2,
-            "permissionName": "用户管理",
-            "permissionCode": "sys:user",
-            "parentId": 1,
-            "type": 1,
-            "children": null
-          }
-        ]
-      }
-    ]
-  }
-  ```
-
-##### 3.2 创建/修改/删除权限
-
-- **URL**: `/permission`, `/permission/{id}`
-- **Method**: `POST`, `PUT`, `DELETE`
-- **权限**: `sys:permission`
-- **说明**: 提供标准的增删改查接口。
-
-#### 响应示例
-
-```json
-{
-  "code": 200,
-  "message": "操作成功",
-  "data": {
-    "id": 1,
-    "customerName": "新客户公司",
-    "customerAddress": "公司新地址",
-    "customerPhone": "13800138001",
-    "customerEmail": "new@example.com"
-  }
-}
-``` 

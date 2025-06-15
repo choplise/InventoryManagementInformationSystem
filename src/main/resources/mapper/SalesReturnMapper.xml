@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.shixuan.inventory.mapper.SalesReturnMapper">
+
+    <resultMap id="SalesReturnResultMap" type="org.shixuan.inventory.domain.SalesReturn">
+        <id column="id" property="id"/>
+        <result column="return_no" property="returnNo"/>
+        <result column="sales_order_id" property="salesOrderId"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="return_date" property="returnDate"/>
+        <result column="total_amount" property="totalAmount"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="customer_name" property="customerName"/>
+        <result column="creator_name" property="creatorName"/>
+    </resultMap>
+
+    <resultMap id="SalesReturnItemResultMap" type="org.shixuan.inventory.domain.SalesReturnItem">
+        <id column="item_id" property="id"/>
+        <result column="return_id" property="salesReturnId"/>
+        <result column="product_id" property="productId"/>
+        <result column="quantity" property="quantity"/>
+        <result column="unit_price" property="salePrice"/>
+        <result column="amount" property="amount"/>
+        <result column="product_code" property="productCode"/>
+        <result column="product_name" property="productName"/>
+        <result column="spec" property="spec"/>
+        <result column="unit" property="unit"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        sr.id, sr.return_no, sr.sales_order_id, sr.customer_id, sr.creator_id, sr.return_date, sr.total_amount,
+        sr.status, sr.remark, sr.create_time, sr.update_time
+    </sql>
+
+    <select id="selectList" resultMap="SalesReturnResultMap">
+        select
+        <include refid="Base_Column_List"/>,
+        c.customer_name,
+        u.username as creator_name
+        from sales_return sr
+        left join customer c on sr.customer_id = c.id
+        left join sys_user u on sr.creator_id = u.id
+        <where>
+            <if test="returnNo != null and returnNo != ''">
+                and sr.return_no like concat('%', #{returnNo}, '%')
+            </if>
+            <if test="customerId != null">
+                and sr.customer_id = #{customerId}
+            </if>
+            <if test="status != null">
+                and sr.status = #{status}
+            </if>
+            <if test="startDate != null">
+                and sr.return_date >= #{startDate}
+            </if>
+            <if test="endDate != null">
+                and sr.return_date &lt;= #{endDate}
+            </if>
+        </where>
+        order by sr.create_time desc
+    </select>
+
+    <select id="selectById" resultMap="SalesReturnResultMap">
+        select
+        <include refid="Base_Column_List"/>,
+        c.customer_name,
+        u.username as creator_name
+        from sales_return sr
+        left join customer c on sr.customer_id = c.id
+        left join sys_user u on sr.creator_id = u.id
+        where sr.id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="org.shixuan.inventory.domain.SalesReturn" useGeneratedKeys="true" keyProperty="id">
+        insert into sales_return (
+            return_no, sales_order_id, customer_id, creator_id, return_date, total_amount,
+            status, remark
+        ) values (
+            #{returnNo}, #{salesOrderId}, #{customerId}, #{creatorId}, now(), #{totalAmount},
+            #{status}, #{remark}
+        )
+    </insert>
+
+    <update id="update" parameterType="org.shixuan.inventory.domain.SalesReturn">
+        update sales_return
+        <set>
+            <if test="customerId != null">customer_id = #{customerId},</if>
+            <if test="creatorId != null">creator_id = #{creatorId},</if>
+            <if test="returnDate != null">return_date = #{returnDate},</if>
+            <if test="totalAmount != null">total_amount = #{totalAmount},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="updateStatus">
+        update sales_return
+        set status = #{status}
+        where id = #{id}
+    </update>
+
+    <select id="selectItemsByReturnId" resultMap="SalesReturnItemResultMap">
+        select
+            sri.id as item_id, sri.return_id, sri.product_id, sri.quantity, sri.unit_price, sri.amount,
+            p.product_code, p.product_name, p.spec, p.unit
+        from sales_return_item sri
+        left join product p on sri.product_id = p.id
+        where sri.return_id = #{salesReturnId}
+    </select>
+
+    <insert id="batchInsertItems">
+        insert into sales_return_item (
+            return_id, product_id, quantity, unit_price
+        ) values
+        <foreach collection="items" item="item" separator=",">
+            (#{item.salesReturnId}, #{item.productId}, #{item.quantity}, #{item.salePrice})
+        </foreach>
+    </insert>
+
+    <delete id="deleteItemsByReturnId" parameterType="java.lang.Long">
+        delete from sales_return_item where return_id = #{salesReturnId}
+    </delete>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        delete from sales_return where id = #{id}
+    </delete>
+
+</mapper> 
